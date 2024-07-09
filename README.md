@@ -23,8 +23,8 @@
 </p>
 
 ## Linux编译
-替换了win api 可以在linux下编译使用
-如编译成so:
+替换了win api 可以在linux下编译使用 代码取自 [[https://github.com/bitcookies/winrar-keygen/issues/21](https://github.com/bitcookies/winrar-keygen/issues/21#issuecomment-1518725708)]
+
 ```shell
 g++ -shared -o winrar.so -fPIC  _tmain.cpp SHA1.cpp -lgmp -lssl -lcrypto
 ```
