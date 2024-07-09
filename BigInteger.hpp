@@ -22,9 +22,9 @@ public:
         static_assert(std::is_integral<__IntegerType>::value);
 
         if constexpr (std::is_signed<__IntegerType>::value) {
-            mpz_init_set_sx(_Value, SmallInteger);
+            mpz_init_set_si(_Value, SmallInteger);
         } else {
-            mpz_init_set_ux(_Value, SmallInteger);
+            mpz_init_set_ui(_Value, SmallInteger);
         }
     }
 
@@ -81,9 +81,9 @@ public:
         static_assert(std::is_integral<__IntegerType>::value);
 
         if constexpr (std::is_signed<__IntegerType>::value) {
-            mpz_set_sx(_Value, SmallInteger);
+            mpz_set_si(_Value, SmallInteger);
         } else {
-            mpz_set_ux(_Value, SmallInteger);
+            mpz_set_ui(_Value, SmallInteger);
         }
 
         return *this;

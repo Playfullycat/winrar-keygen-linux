@@ -54,7 +54,7 @@ public:
         }
 
         Point operator-() const noexcept {
-            return Point(_X, _X + _Y);
+            return Point(_Curve, _X, _X + _Y);
         }
 
         Point& operator=(const Point& Other) {

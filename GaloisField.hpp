@@ -51,10 +51,12 @@ public:
         __FieldTraits::Load(_Val, pbBuffer, cbBuffer);
     }
 
+#ifdef _MSC_VER
     template<typename __Dummy = std::enable_if<BitSizeValue <= sizeof(uintptr_t) * 8>::type>
     GaloisField(GaloisFieldInitByDump, uintptr_t SerializedValue) {
         __FieldTraits::Load(_Val, SerializedValue);
     }
+#endif
 
     GaloisField<__FieldTraits>& operator=(const typename __FieldTraits::ElementType& Element) {
         __FieldTraits::Verify(Element);
@@ -62,11 +64,13 @@ public:
         return *this;
     }
 
+#ifdef _MSC_VER
     template<typename __Dummy = std::enable_if<BitSizeValue <= sizeof(uintptr_t) * 8>::type>
     GaloisField<__FieldTraits>& operator=(uintptr_t SerializedValue) {
         __FieldTraits::Load(_Val, SerializedValue);
         return *this;
     }
+#endif
 
     bool IsZero() const noexcept {
         return __FieldTraits::IsZero(_Val);
@@ -194,10 +198,12 @@ public:
         return Result;
     }
 
+#ifdef _MSC_VER
     template<typename __Dummy = std::enable_if<BitSizeValue <= sizeof(uintptr_t) * 8>::type>
     uintptr_t Dump() const noexcept {
         return __FieldTraits::Dump(_Val);
     }
+#endif
 
     size_t Dump(void* lpBuffer, size_t cbBuffer) const {
         return __FieldTraits::Dump(_Val, lpBuffer, cbBuffer);
@@ -207,11 +213,13 @@ public:
         return __FieldTraits::Dump(_Val);
     }
 
+#ifdef _MSC_VER
     template<typename __Dummy = std::enable_if<BitSizeValue <= sizeof(uintptr_t) * 8>::type>
     GaloisField<__FieldTraits>& Load(uintptr_t SerializedValue) {
         __FieldTraits::Load(_Val, SerializedValue);
         return *this;
     }
+#endif
 
     GaloisField<__FieldTraits>& Load(const void* lpBuffer, size_t cbBuffer) {
         __FieldTraits::Load(_Val, lpBuffer, cbBuffer);

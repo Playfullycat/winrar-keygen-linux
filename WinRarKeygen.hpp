@@ -29,6 +29,15 @@ private:
         BigInteger s;
     };
 
+#if !defined(_MSC_VER) && !defined(__GNUC__)
+    static inline uint32_t byteswap32(uint32_t ui32) {
+        return (ui32 >> 24) & 0xff |
+        ((ui32 >> 16) & 0xff) << 8 |
+        ((ui32 >> 8) & 0xff) << 16 |
+        (ui32 & 0xff) << 24;
+    }
+#endif
+
     static BigInteger GeneratePrivateKey(const void* lpSeed, size_t cbSeed) {
         uint32_t Generator[6];
         uint16_t RawPrivateKey[15] = {};
@@ -40,7 +49,13 @@ private:
             Sha1Digest = Sha1.Evaluate();
 
             for (unsigned i = 0; i < 5; ++i) {
+#if defined(_MSC_VER)
                 Generator[i + 1] = _byteswap_ulong(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[i]);
+#elif defined(__GNUC__)
+                Generator[i + 1] = __builtin_bswap32(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[i]);
+#else
+                Generator[i + 1] = byteswap32(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[i]);
+#endif
             }
         } else {
             Generator[1] = 0xeb3eb781;
@@ -59,7 +74,13 @@ private:
             Sha1Digest = Sha1.Evaluate();
 
             RawPrivateKey[i] = static_cast<uint16_t>(
+#if defined(_MSC_VER)
                 _byteswap_ulong(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[0])
+#elif defined(__GNUC__)
+                __builtin_bswap32(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[0])
+#else
+                byteswap32(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[0])
+#endif
             );
         }
 
@@ -99,7 +120,7 @@ private:
             RawRandomInteger[i] = static_cast<uint16_t>(rand());
         }
 
-        return BigInteger(false, RawRandomInteger, sizeof(RawRandomInteger), true);
+        return ++BigInteger(false, RawRandomInteger, sizeof(RawRandomInteger), true);
     }
 
     static BigInteger GenerateHashInteger(const void* lpMessage, size_t cbMessage) {
@@ -108,7 +129,13 @@ private:
         HasherSha1Traits::DigestType Sha1Digest = Sha1.Evaluate();
 
         for (size_t i = 0; i < 5; ++i) {
+#if defined(_MSC_VER)
             RawHash[i] = _byteswap_ulong(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[i]);
+#elif defined(__GNUC__)
+            RawHash[i] = __builtin_bswap32(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[i]);
+#else
+            RawHash[i] = byteswap32(reinterpret_cast<uint32_t*>(Sha1Digest.Bytes)[i]);
+#endif
         }
 
         // SHA1("") with all-zeroed initial value
@@ -206,7 +233,6 @@ public:
         }
 
         temp = RegInfo.UserName + RegInfo.Items[0];
-
         while (true) {
             auto UserNameSignature = Sign(temp.c_str(), temp.length());
             auto UserNameSignatureR = UserNameSignature.r.ToString(16, true);
@@ -237,9 +263,6 @@ public:
             RegInfo.Items[3].c_str(),
             RegInfo.Checksum
         );
-
-        // The length has been limited to 60 (issues #6)
-        // This problem has been fixed, this prompt should no longer appear
         if (RegInfo.HexData.length() % 54 != 0) {
             throw std::runtime_error("InternalError: The length of register data is not correct.");
         }

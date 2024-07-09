@@ -22,6 +22,13 @@
   <a href="README.zh-CN.md">简体中文</a> | <a href="README.md">English</a>
 </p>
 
+## Linux编译
+替换了win api 可以在linux下编译使用
+如编译成so:
+```shell
+g++ -shared -o winrar.so -fPIC  _tmain.cpp SHA1.cpp -lgmp -lssl -lcrypto
+```
+
 
 ## 1. What is WinRAR?
 
